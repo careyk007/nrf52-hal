@@ -34,12 +34,23 @@ where
     pub const TICKS_PER_SECOND: u32 = 1_000_000;
 
     pub fn new(timer: T) -> Self {
+        // Enable Clear-on-Capture and Stop-on-Capture.
+        // This is probably default behavior for single-shot timer.
         timer
             .shorts
             .write(|w| w.compare0_clear().enabled().compare0_stop().enabled());
+
+        // Set the prescaler value.
+        // The timer clock frequency will be 16MHz / (2^(prescalar_value)).
+        // Acceptable values are 0..=9, default is 4.
+        // Range of timer clock frequency are then 16MHz..=31.25kHz.
+        // If the resulting clock frequency is <= 1MHz, the timer will use a 
+        // slower 1MHz clock instead of the 16MHz clock, which results in
+        // lower power consumption.
         timer.prescaler.write(
             |w| unsafe { w.prescaler().bits(4) }, // 1 MHz
         );
+        // Configures the timer to be 32 bits wide.
         timer.bitmode.write(|w| w.bitmode()._32bit());
 
         Timer(timer)

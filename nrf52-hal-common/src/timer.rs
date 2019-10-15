@@ -38,7 +38,8 @@ where
         // This is probably default behavior for single-shot timer.
         timer
             .shorts
-            .write(|w| w.compare0_clear().enabled().compare0_stop().enabled());
+            .write(|w| w.compare0_clear().disabled().compare0_stop().disabled());
+            // .write(|w| w.compare0_clear().enabled().compare0_stop().enabled());
 
         // Set the prescaler value.
         // The timer clock frequency will be 16MHz / (2^(prescalar_value)).

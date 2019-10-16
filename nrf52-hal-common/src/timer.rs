@@ -55,7 +55,7 @@ where
     pub fn into_periodic(self) -> Timer<T, PeriodicTimer> {
         self.0
             .shorts
-            .write(|w| w.compare0_stop().disabled());
+            .write(|w| w.compare0_clear().enabled().compare0_stop().disabled());
         Timer::<T, PeriodicTimer>(self.free(), PhantomData)
     }
 }
@@ -67,7 +67,7 @@ where
     pub fn new_periodic(timer: T) -> Timer<T, PeriodicTimer> {
         timer
             .shorts
-            .write(|w| w.compare0_clear().enabled().compare0_stop().enabled());
+            .write(|w| w.compare0_clear().enabled().compare0_stop().disabled());
         timer.prescaler.write(
             |w| unsafe { w.prescaler().bits(4) }, // 1 MHz
         );
@@ -79,7 +79,7 @@ where
     pub fn into_oneshot(self) -> Timer<T, OneShotTimer> {
         self.0
             .shorts
-            .write(|w| w.compare0_stop().enabled());
+            .write(|w| w.compare0_clear().enabled().compare0_stop().enabled());
         Timer::<T, OneShotTimer>(self.free(), PhantomData)
     }
 }
